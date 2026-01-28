@@ -5,11 +5,21 @@
    ========================================= */
 
 /* --- ELEMENTOS SPLASH --- */
+.splash-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Asegura centrado flex */
+  text-align: center;  /* Asegura centrado de texto */
+}
+
 .splash-logo {
   width: 120px;
   opacity: 0;
+  margin: 0 auto 20px auto; /* Centrado forzado */
+  display: block;
   animation: fadeIn 1s ease-out forwards;
 }
+
 .splash-escritura {
   color: white;
   font-size: 1.5em;
@@ -18,7 +28,10 @@
   overflow: hidden;
   border-right: 3px solid white;
   width: 0;
-  animation: escribir 2.5s steps(24, end) 0.3s forwards, cursorBlink 0.75s step-end infinite;
+  margin: 0 auto; /* Centrado forzado de la caja de texto */
+  
+  /* steps(20) coincide con la longitud de "Bienvenido a UPIICSA" */
+  animation: escribir 2.5s steps(20, end) 0.3s forwards, cursorBlink 0.75s step-end infinite;
 }
 
 /* --- TARJETA DE INSTRUCCIONES --- */
@@ -77,21 +90,26 @@
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Estado inicial para la animación de entrada */
+  opacity: 0; 
 }
 
 .boton-info:active, #buscador-toggle:active, .leaflet-control-gps:active { 
   transform: scale(0.9); 
 }
 
-/* 1. BOTÓN INFO (Abajo) */
+/* --- 1. BOTÓN INFO (Abajo) --- */
 .boton-info {
   position: fixed;
   right: 15px;
   bottom: 100px;
   display: none; 
+  /* 🔥 ANIMACIÓN ENTRADA 1 (Primero) */
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 3.8s forwards;
 }
 
-/* 2. BOTÓN GPS (Medio) - CORREGIDO (Sin typos y centrado real) */
+/* --- 2. BOTÓN GPS (Medio) --- */
 .leaflet-control-gps {
   /* Contenedor principal */
   background-color: var(--color-primario) !important;
@@ -112,6 +130,9 @@
   justify-content: center !important;
   align-items: center !important;
   z-index: 1500;
+  
+  /* 🔥 ANIMACIÓN ENTRADA 2 (Segundo) */
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 3.9s forwards;
 }
 
 /* 🔥 CENTRADO DEL ICONO GPS 🔥 */
@@ -159,15 +180,17 @@
   animation: pulseGps 2s infinite;
 }
 
-/* 3. BOTÓN BUSCADOR (Arriba) */
+/* --- 3. BOTÓN BUSCADOR (Arriba) --- */
 #buscador-toggle {
   position: fixed;
   right: 15px;
   bottom: 220px;
+  /* 🔥 ANIMACIÓN ENTRADA 3 (Tercero) */
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 4.0s forwards;
 }
 
 
-/* --- CAJA DEL BUSCADOR --- */
+/* --- CAJA DEL BUSCADOR (Efecto Slide) --- */
 .buscador-container {
   position: fixed;
   bottom: 220px;
@@ -181,11 +204,22 @@
   flex-direction: column;
   gap: 5px;
   width: 260px;
+  
+  /* 🔥 MEJORA DE ANIMACIÓN DESLIZANTE */
   transform-origin: right center;
-  transition: opacity 0.2s, transform 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: scaleX(1) translateX(0);
+  pointer-events: auto;
 }
 
-.buscador-container.oculto { opacity: 0; pointer-events: none; transform: scale(0.9); }
+.buscador-container.oculto {
+  /* Estado oculto con efecto slide */
+  opacity: 0; 
+  pointer-events: none; 
+  transform: scaleX(0.8) translateX(20px);
+  display: flex !important; /* Mantenemos flex para que la animación funcione */
+}
 
 .buscador-container input { 
   padding: 12px; 
@@ -227,6 +261,9 @@
   z-index: 1000;
   overflow-x: auto;
   scrollbar-width: none;
+  
+  /* 🔥 ANIMACIÓN ENTRADA 4 (Desde abajo) */
+  animation: fadeInUp 0.8s ease-out 4.2s backwards;
 }
 .floor-selector::-webkit-scrollbar { display: none; }
 
@@ -251,9 +288,33 @@
   box-shadow: 0 2px 10px rgba(0, 128, 0, 0.3);
 }
 
-/* LEAFLET UTILS */
+/* 🔥 ESTADOS DESACTIVADOS (Nuevo para la lógica de marcadores) */
+.floor-selector button:disabled,
+.floor-selector button.desactivado {
+  background-color: #e0e0e0; /* Gris claro */
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+  pointer-events: none; /* No permite clicks */
+  transform: none; /* Sin efecto al presionar */
+}
+
+
+/* =========================================
+   📍 LEAFLET POPUPS (Animación Bounce)
+   ========================================= */
 .leaflet-marker-icon { transition: transform 0.2s; }
 .leaflet-popup-content { font-size: 1.1em; line-height: 1.4; }
+
+/* 🔥 EFECTO REBOTE AL ABRIR POPUP */
+.leaflet-popup-content-wrapper {
+  animation: popupBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: bottom center;
+}
+.leaflet-popup-tip {
+  animation: fadeIn 0.4s ease-out;
+}
 
 
 /* =========================================

@@ -1,24 +1,50 @@
-const puntos = [
-  { nombre: "Biblioteca", coords: [19.395, -99.095] },
-  { nombre: "Auditorio", coords: [19.396, -99.096] },
-  { nombre: "Cafetería", coords: [19.3955, -99.094] }
-];
+// js/markers.js
 
-export const puntosBusqueda = [];
-
-export function cargarMarcadores(map) {
-  if (!map) return;
-  puntosBusqueda.length = 0;
-
-  puntos.forEach(p => {
-    try {
-      const marker = L.marker(p.coords)
-        .bindPopup(`<strong>${p.nombre}</strong>`)
-        .addTo(map);
-      puntosBusqueda.push({ ...p, marker });
-    } catch (error) {
-      console.warn(`Error marcador: ${p.nombre}`);
+// 1. BASE DE DATOS JERÁRQUICA (Edificio -> Pisos -> Lugares)
+export const datosEdificios = {
+  "gobierno": {
+    nombre: "Edificio de Gobierno",
+    coords: [19.39595, -99.09163], // Coordenada central del edificio
+    descripcion: "Trámites y Dirección",
+    pisosDisponibles: ["PB", "1"], // Solo activa Planta BJ y Planta 1
+    lugares: {
+      "PB": [
+        { nombre: "Dirección", coords: [19.39599, -99.09168], tipo: "oficina" },
+        { nombre: "Gestión Escolar", coords: [19.39590, -99.09160], tipo: "tramites" },
+        { nombre: "Caja", coords: [19.39592, -99.09162], tipo: "pagos" }
+      ],
+      "1": [
+        { nombre: "Sala de Juntas", coords: [19.39599, -99.09168], tipo: "sala" },
+        { nombre: "Decanato", coords: [19.39592, -99.09165], tipo: "oficina" }
+      ],
+      "2": [], // Vacío
+      "3": []  // Vacío
     }
-  });
-  console.log(`📍 ${puntosBusqueda.length} marcadores cargados.`);
-}
+  },
+  "culturales": {
+    nombre: "Edificio de Culturales",
+    coords: [19.39650, -99.09200], 
+    descripcion: "Auditorio y Actividades",
+    pisosDisponibles: ["PB"], // Solo activa Planta BJ
+    lugares: {
+      "PB": [
+        { nombre: "Auditorio", coords: [19.39655, -99.09205], tipo: "auditorio" },
+        { nombre: "Salón de Danza", coords: [19.39645, -99.09195], tipo: "salon" }
+      ]
+    }
+  },
+  "pesados": {
+    nombre: "Laboratorios Pesados",
+    coords: [19.39500, -99.09100], 
+    descripcion: "Ingeniería Industrial",
+    pisosDisponibles: ["PB", "1", "2"], // Activa BJ, 1 y 2
+    lugares: {
+      "PB": [{ nombre: "Maquinaria Pesada", coords: [19.39505, -99.09105], tipo: "lab" }],
+      "1": [{ nombre: "Aulas de Cómputo", coords: [19.39505, -99.09105], tipo: "aula" }],
+      "2": [{ nombre: "Laboratorio de Química", coords: [19.39505, -99.09105], tipo: "lab" }]
+    }
+  }
+};
+
+// Array vacío que se llenará dinámicamente en main.js para el buscador
+export const puntosBusqueda = [];
