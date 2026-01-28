@@ -1,0 +1,293 @@
+/* css/components.css */
+
+/* =========================================
+   📱 OPTIMIZACIONES GENERALES UI
+   ========================================= */
+
+/* --- ELEMENTOS SPLASH --- */
+.splash-logo {
+  width: 120px;
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards;
+}
+.splash-escritura {
+  color: white;
+  font-size: 1.5em;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid white;
+  width: 0;
+  animation: escribir 2.5s steps(24, end) 0.3s forwards, cursorBlink 0.75s step-end infinite;
+}
+
+/* --- TARJETA DE INSTRUCCIONES --- */
+.contenedor-instrucciones {
+  background-color: #fff;
+  color: var(--color-texto);
+  padding: 25px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 500px;
+  width: 85%;
+  box-shadow: var(--sombra-suave);
+}
+.logo-instruccion { width: 120px; margin-bottom: 10px; }
+.contenedor-instrucciones h1 { font-size: 1.4em; margin-bottom: 8px; line-height: 1.3; }
+.contenedor-instrucciones p { font-size: 0.95em; margin-bottom: 20px; line-height: 1.5; }
+.creditos { margin-top: 15px; font-size: 0.8em; color: #888; }
+
+#botonEntendido {
+  background-color: var(--color-primario);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+  width: 100%;
+}
+#botonEntendido:active { transform: scale(0.95); }
+
+
+/* =========================================
+   🔘 BOTONES FLOTANTES (COLUMNA DERECHA)
+   ========================================= */
+
+/* Estilo base unificado */
+.boton-info, #buscador-toggle, .leaflet-control-gps {
+  width: 48px !important;
+  height: 48px !important;
+  background-color: var(--color-primario) !important;
+  color: white !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+  
+  /* Flexbox para centrado perfecto */
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  
+  cursor: pointer;
+  font-size: 1.6em !important; /* Ligeramente más grande para mejor alineación */
+  border: 2px solid rgba(255,255,255,0.9) !important;
+  z-index: 1500;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.boton-info:active, #buscador-toggle:active, .leaflet-control-gps:active { 
+  transform: scale(0.9); 
+}
+
+/* 1. BOTÓN INFO (Abajo) */
+.boton-info {
+  position: fixed;
+  right: 15px;
+  bottom: 100px;
+  display: none; 
+}
+
+/* 2. BOTÓN GPS (Medio) - CORREGIDO (Sin typos y centrado real) */
+.leaflet-control-gps {
+  /* Contenedor principal */
+  background-color: var(--color-primario) !important;
+  border: 2px solid rgba(255,255,255,0.9) !important;
+  border-radius: 50% !important;
+  width: 48px !important;
+  height: 48px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+  
+  /* Posición fija */
+  position: fixed !important;
+  right: 15px !important;
+  bottom: 160px !important;
+  margin: 0 !important;
+  padding: 0 !important; /* Cero padding para evitar empujones */
+  
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 1500;
+}
+
+/* 🔥 CENTRADO DEL ICONO GPS 🔥 */
+.leaflet-control-gps a {
+  background-color: transparent !important;
+  border: none !important;
+  color: white !important;
+  text-decoration: none;
+  
+  /* Flexbox Interno */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  
+  width: 100% !important;
+  height: 100% !important;
+  font-size: 1em !important; /* Hereda del padre */
+  line-height: 1 !important;  /* Elimina espacio vertical fantasma */
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Aseguramos que el icono <i> se comporte bien */
+.leaflet-control-gps a i {
+  display: block;
+  line-height: 1;
+}
+
+/* Efecto Hover */
+.leaflet-control-gps:hover {
+  background-color: var(--color-acento) !important;
+  transform: scale(1.1);
+}
+.leaflet-control-gps:hover a {
+  color: #333 !important;
+}
+
+/* Estado Activo */
+.leaflet-control-gps.activo {
+  background-color: white !important;
+  border-color: var(--color-primario) !important;
+}
+.leaflet-control-gps.activo a {
+  color: var(--color-primario) !important;
+  animation: pulseGps 2s infinite;
+}
+
+/* 3. BOTÓN BUSCADOR (Arriba) */
+#buscador-toggle {
+  position: fixed;
+  right: 15px;
+  bottom: 220px;
+}
+
+
+/* --- CAJA DEL BUSCADOR --- */
+.buscador-container {
+  position: fixed;
+  bottom: 220px;
+  right: 75px;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 1500;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 260px;
+  transform-origin: right center;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.buscador-container.oculto { opacity: 0; pointer-events: none; transform: scale(0.9); }
+
+.buscador-container input { 
+  padding: 12px; 
+  font-size: 16px; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  outline: none; 
+  background: #f9f9f9; 
+  -webkit-appearance: none;
+  appearance: none;
+}
+.buscador-container input:focus { border-color: var(--color-primario); background: #fff; }
+
+.resultados-busqueda { list-style: none; max-height: 40vh; overflow-y: auto; padding: 0; margin: 0; -webkit-overflow-scrolling: touch; }
+.resultados-busqueda li { padding: 12px 10px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.95em; color: #444; }
+.resultados-busqueda li:active { background-color: #f0f0f0; }
+
+
+/* =========================================
+   🏝️ CÁPSULA DE PISOS (Selector)
+   ========================================= */
+.floor-selector {
+  position: fixed;
+  bottom: 25px; 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 6px;
+  border-radius: 50px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,255,255,0.5);
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  z-index: 1000;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.floor-selector::-webkit-scrollbar { display: none; }
+
+.floor-selector button {
+  flex: 1 0 auto;
+  padding: 10px 16px;
+  background-color: transparent;
+  color: #555;
+  font-weight: 600;
+  font-size: 0.9em;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.floor-selector button:active, .floor-selector button.activo {
+  background-color: var(--color-primario);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 128, 0, 0.3);
+}
+
+/* LEAFLET UTILS */
+.leaflet-marker-icon { transition: transform 0.2s; }
+.leaflet-popup-content { font-size: 1.1em; line-height: 1.4; }
+
+
+/* =========================================
+   💻 OPTIMIZACIÓN TABLET Y DESKTOP
+   ========================================= */
+@media (min-width: 768px) {
+  .boton-info, #buscador-toggle, .leaflet-control-gps {
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 1.2em !important;
+    right: 30px !important;
+  }
+  .boton-info { bottom: 100px; }
+  .leaflet-control-gps { bottom: 155px !important; }
+  #buscador-toggle { bottom: 210px; }
+  .buscador-container { bottom: 210px; right: 85px; width: 300px; }
+
+  .boton-info:hover, #buscador-toggle:hover, .leaflet-control-gps:hover {
+    transform: scale(1.1);
+    background-color: var(--color-acento) !important;
+    color: #333 !important;
+  }
+  .leaflet-control-gps:hover a { color: #333 !important; }
+
+  .floor-selector {
+    bottom: 30px;
+    width: auto;
+    min-width: 400px;
+    padding: 8px 12px;
+    overflow-x: visible; 
+  }
+  .floor-selector button { font-size: 1em; padding: 10px 20px; }
+  .floor-selector button:hover {
+    background-color: rgba(0, 128, 0, 0.1);
+    color: var(--color-primario);
+  }
+}

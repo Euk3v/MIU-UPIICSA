@@ -1,0 +1,31 @@
+:root {
+  /* 🎨 PALETA DE COLORES */
+  --color-primario: #008000;    
+  --color-hover: #005e00;       
+  --color-boton-piso: #009619;  
+  --color-acento: #d3d61f;      
+  --color-texto: #333;
+  --color-fondo: #f0f0f0;
+  
+  /* 📐 MEDIDAS Y FUENTES */
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --sombra-mini: 0 2px 6px rgba(0,0,0,0.3);
+  --font-principal: 'Poppins', sans-serif;
+  --font-mono: 'Courier New', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-principal);
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-fondo);
+}
+
+.oculto { display: none !important; }

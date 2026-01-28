@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Interactivo UPIICSA</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <link rel="icon" href="assets/icons/favicon/favicon.ico" />
+  <meta name="theme-color" content="#008000" />
+</head>
+<body>
+
+  <div id="splash" class="splash-screen">
+    <div class="splash-contenido">
+      <img src="assets/icons/upiicsa.png" alt="Logo UPIICSA" class="splash-logo" />
+      <h2 class="splash-escritura">Bienvenido a UPIICSA</h2>
+    </div>
+  </div>
+
+  <div id="pantalla-inicio" class="pantalla-inicio oculto">
+    <div class="contenedor-instrucciones">
+      <img src="assets/icons/logo_miu.png" alt="Logo MIU" class="logo-instruccion" />
+      <h1>Bienvenido al Mapa Interactivo de UPIICSA</h1>
+      <p>
+        🔹 Haz clic en los <strong>marcadores</strong> para conocer las áreas.<br />
+        🔹 Usa los botones inferiores para cambiar de <strong>planta</strong>.<br />
+        🔹 Activa el <strong>GPS</strong> para ver tu ubicación real.<br />
+        🔹 Usa la <strong>Lupa</strong> para buscar salones específicos.<br />
+      </p>
+      <button id="botonEntendido">Entendido</button>
+      <p class="creditos">Desarrollado por: <strong>Kevin Maldonado Hernández</strong></p>
+    </div>
+  </div>
+
+  <button id="botonInfo" class="boton-info" title="Ver instrucciones">
+    <i class='bx bx-info-circle'></i>
+  </button>
+
+  <div id="buscador-toggle" title="Buscar lugar">
+    <i class='bx bx-search-alt-2'></i>
+  </div>
+  
+  <div class="buscador-container oculto" id="buscador-container">
+    <input type="text" id="buscador" placeholder="Buscar lugar..." />
+    <ul id="resultados-busqueda" class="resultados-busqueda oculto"></ul>
+  </div>
+
+  <div id="map-container">
+    <div id="map"></div>
+    <div class="floor-selector">
+      <button id="botonPlanta1">Planta BJ</button>
+      <button id="botonPlanta2">Planta 1</button>
+      <button id="botonPlanta3">Planta 2</button>
+      <button id="botonPlanta4">Planta 3</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
+
+ 

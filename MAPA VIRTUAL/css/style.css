@@ -1,0 +1,5 @@
+/* css/style.css */
+@import url('base.css');       /* 1. Variables y reset */
+@import url('animations.css'); /* 2. Animaciones */
+@import url('layout.css');     /* 3. Estructura general */
+@import url('components.css'); /* 4. Botones y detalles (Aquí arreglamos el GPS) */
