@@ -3,6 +3,10 @@ let userMarker = null;
 let accuracyCircle = null;
 let mapInstance = null;
 
+// Coordenadas de UPIICSA (La "Base")
+const UPIICSA_COORDS = [19.39595, -99.09163];
+const DEFAULT_ZOOM = 18;
+
 const options = {
   enableHighAccuracy: true,
   timeout: 5000,
@@ -44,7 +48,7 @@ function toggleSeguimiento(btnContainer) {
   const icon = btnContainer.querySelector('i');
 
   if (watchId) {
-    // 🛑 DETENER
+    // 🛑 DETENER GEOLOCALIZACIÓN
     navigator.geolocation.clearWatch(watchId);
     watchId = null;
     btnContainer.classList.remove('activo');
@@ -58,10 +62,17 @@ function toggleSeguimiento(btnContainer) {
       userMarker = null;
       accuracyCircle = null;
     }
-    console.log("🛑 Geolocalización detenida.");
+
+    // ✨ VUELTA A CASA (La magia nueva) ✨
+    // Hacemos que el mapa "vuele" de regreso a UPIICSA suavemente
+    console.log("✈️ Regresando a UPIICSA...");
+    mapInstance.flyTo(UPIICSA_COORDS, DEFAULT_ZOOM, {
+        animate: true,
+        duration: 1.5 // Tarda 1.5 segundos en llegar (efecto visual)
+    });
 
   } else {
-    // ▶️ INICIAR
+    // ▶️ INICIAR GEOLOCALIZACIÓN
     if (!navigator.geolocation) {
       alert("Tu navegador no soporta geolocalización.");
       return;
@@ -94,19 +105,30 @@ function actualizarPosicion(position) {
       radius: accuracy, color: "#4285F4", fillColor: "#4285F4", fillOpacity: 0.15, weight: 0
     }).addTo(mapInstance);
 
-    mapInstance.setView(latLng, 18);
+    // Primera vez: Vamos rápido a la ubicación del usuario
+    mapInstance.flyTo(latLng, 18); 
   } else {
+    // Actualizaciones: Solo movemos el marcador, no forzamos la vista si el usuario se movió
     userMarker.setLatLng(latLng);
     accuracyCircle.setLatLng(latLng);
     accuracyCircle.setRadius(accuracy);
+    
+    // Opcional: Si quieres que la cámara SIEMPRE siga al usuario, descomenta esto:
+    // mapInstance.setView(latLng); 
   }
 }
 
 function manejarError(err) {
   console.warn(`ERROR(${err.code}): ${err.message}`);
   const btn = document.querySelector('.leaflet-control-gps');
+  
+  // Si falla, apagamos el botón visualmente
   if (btn && btn.classList.contains('activo')) {
-    btn.click(); // Desactivar si falla
+    const icon = btn.querySelector('i');
+    btn.classList.remove('activo');
+    if (icon) icon.className = 'bx bx-crosshair';
+    watchId = null; 
   }
-  alert("⚠️ No se pudo obtener la ubicación.");
+  
+  alert("⚠️ No se pudo obtener la ubicación o la señal es débil.");
 }
