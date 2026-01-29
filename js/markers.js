@@ -15,8 +15,8 @@ export const datosEdificios = {
         { nombre: "Área Secretarial (Admin)", coords: [19.3958498139565, -99.09253445418076], tipo: "oficina" },
         
         // --- ARRIBA (Salud) ---
-        { nombre: "Atención a la Salud (Enfermería)", coords: [19.39600, -99.09163], tipo: "salud" },
-        { nombre: "Sanitarios PB (Hombres/Mujeres)", coords: [19.39600, -99.09165], tipo: "bano" },
+        { nombre: "Atención a la Salud (Enfermería)", coords: [19.395980286105395, -99.09269445080315], tipo: "salud" },
+        { nombre: "Sanitarios PB (Hombres/Mujeres)", coords: [19.39601950083356, -99.0926461710416], tipo: "bano" },
 
         // --- DERECHA ---
         { nombre: "Gestión Escolar (Ventanillas)", coords: [19.39595, -99.09155], tipo: "tramites" },
