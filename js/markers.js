@@ -11,8 +11,8 @@ export const datosEdificios = {
     lugares: {
       "PB": [
         // --- LADO IZQUIERDO Y ABAJO ---
-        { nombre: "Subdirección Administrativa", coords: [19.39590, -99.09170], tipo: "direccion" },
-        { nombre: "Área Secretarial (Admin)", coords: [19.39592, -99.09170], tipo: "oficina" },
+        { nombre: "Subdirección Administrativa", coords: [19.395837796528298, -99.09237553329902], tipo: "direccion" },
+        { nombre: "Área Secretarial (Admin)", coords: [19.3958498139565, -99.09253445418076], tipo: "oficina" },
         
         // --- ARRIBA (Salud) ---
         { nombre: "Atención a la Salud (Enfermería)", coords: [19.39600, -99.09163], tipo: "salud" },
