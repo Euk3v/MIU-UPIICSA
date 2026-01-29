@@ -5,10 +5,10 @@ import { iniciarGeolocalizacion } from './geolocation.js';
 
 // Variables de Estado
 let mapa = null;
-let capaMarcadoresPrincipales = null; // Capa de los edificios (Iconos Grandes)
-let capaInteriores = null;            // Capa de los salones (Puntitos)
-let edificioActualID = null;          // ID del edificio seleccionado
-let pisoActual = "PB";                // Piso actual
+let capaMarcadoresPrincipales = null; 
+let capaInteriores = null;            
+let edificioActualID = null;          
+let pisoActual = "PB";                
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -19,15 +19,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     capaMarcadoresPrincipales = L.layerGroup().addTo(mapa);
     capaInteriores = L.layerGroup().addTo(mapa);
     
-    // Cargamos la vista inicial
     cargarVistaGeneral(); 
     
-    // Iniciamos módulos
     iniciarGeolocalizacion(mapa);
     iniciarBuscador(mapa);
     iniciarUI();
     iniciarControlPisos(); 
-    iniciarResetClick(); // Detectar clic fuera para salir
+    iniciarResetClick(); 
 
   } catch (error) {
     console.error("🚨 Error crítico:", error);
@@ -35,39 +33,49 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* =========================================
-   📍 1. VISTA GENERAL (Edificios)
+   📍 1. VISTA GENERAL
    ========================================= */
 function cargarVistaGeneral() {
-  // Limpieza
   capaMarcadoresPrincipales.clearLayers();
   capaInteriores.clearLayers();
   edificioActualID = null;
-  puntosBusqueda.length = 0; // Limpiamos buscador
+  puntosBusqueda.length = 0; 
 
-  // Desactivamos todos los botones de piso
   actualizarBotonesPisos(null);
 
-  // Generamos marcadores de Edificios
   Object.keys(datosEdificios).forEach(key => {
     const edificio = datosEdificios[key];
     
-    // Marcador Principal (Azul por defecto de Leaflet o personalizado)
-    const marker = L.marker(edificio.coords)
-      .bindTooltip(`<strong>${edificio.nombre}</strong>`, { direction: 'top', offset: [0, -40] })
-      .on('click', () => entrarAEdificio(key)); // Al hacer click, entra al edificio
+    // --- 🎨 AJUSTE FINAL DE POSICIÓN ---
+    const customIcon = L.icon({
+      iconUrl: edificio.icono,
+      
+      // Tamaño Grande
+      iconSize: [120, 160],     
+      
+      // ⚓ ANCLAJE CORREGIDO (El secreto para que no se mueva)
+      // [60]: Centro horizontal (mitad de 120).
+      // [138]: Altura de la punta visual. (Bajamos de 160 a 138 para que el pin "baje" al suelo)
+      iconAnchor: [60, 138],   
+      
+      popupAnchor: [0, -140],  
+      className: 'mi-icono-animado' 
+    });
+
+    const marker = L.marker(edificio.coords, { icon: customIcon })
+      .bindTooltip(`<strong>${edificio.nombre}</strong>`, { direction: 'top', offset: [0, -130] })
+      .on('click', () => entrarAEdificio(key));
 
     capaMarcadoresPrincipales.addLayer(marker);
 
-    // Llenamos el buscador con los edificios principales
+    // (Puntos rojos eliminados) 🗑️
+
     puntosBusqueda.push({ nombre: edificio.nombre, coords: edificio.coords, marker: marker });
   });
-
-  // Restaurar vista (Opcional, si quieres que se aleje al salir)
-  // mapa.flyTo([19.39595, -99.09163], 17);
 }
 
 /* =========================================
-   🏢 2. ENTRAR A EDIFICIO (Zoom In)
+   🏢 2. ENTRAR A EDIFICIO
    ========================================= */
 function entrarAEdificio(idEdificio) {
   const data = datosEdificios[idEdificio];
@@ -75,49 +83,108 @@ function entrarAEdificio(idEdificio) {
 
   console.log(`🏢 Entrando a: ${data.nombre}`);
 
-  // Ocultamos los marcadores grandes
   capaMarcadoresPrincipales.clearLayers();
-
-  // Hacemos Zoom suave al edificio
   mapa.flyTo(data.coords, 20, { duration: 1.5 });
-
-  // Cargamos la Planta Baja por defecto
   cambiarPiso("PB");
-
-  // Actualizamos los botones (Grisear los que no existen)
   actualizarBotonesPisos(data.pisosDisponibles);
 }
 
 /* =========================================
-   📶 3. CAMBIAR DE PISO (Lógica de Puntos)
+   📶 3. CAMBIAR DE PISO
    ========================================= */
 function cambiarPiso(piso) {
   if (!edificioActualID) return;
 
   pisoActual = piso;
-  capaInteriores.clearLayers(); // Borrar puntos del piso anterior
+  capaInteriores.clearLayers(); 
 
   const dataEdificio = datosEdificios[edificioActualID];
-  // Validamos si el piso existe en los datos, si no, array vacío
   const lugaresPiso = dataEdificio.lugares[piso] || [];
 
   lugaresPiso.forEach(lugar => {
-    // Creamos un puntito pequeño para los salones
-    const iconoInterior = L.divIcon({
-      className: 'punto-interior',
-      html: `<div style="background-color: #d3d61f; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-      iconSize: [14, 14],
-      popupAnchor: [0, -10]
+    let iconoClass = 'bx bxs-circle'; 
+    let colorFondo = '#d3d61f';       
+
+    switch(lugar.tipo) {
+        case 'bano':
+            iconoClass = 'bx bx-male-female';
+            colorFondo = '#3b82f6'; 
+            break;
+        case 'salud': 
+            iconoClass = 'bx bxs-ambulance';
+            colorFondo = '#ef4444'; 
+            break;
+        case 'comida':
+        case 'cafeteria':
+            iconoClass = 'bx bxs-coffee';
+            colorFondo = '#f97316'; 
+            break;
+        case 'pagos':
+        case 'caja':
+            iconoClass = 'bx bxs-dollar-circle';
+            colorFondo = '#16a34a'; 
+            break;
+        case 'tramites':
+            iconoClass = 'bx bxs-id-card';
+            colorFondo = '#0891b2'; 
+            break;
+        case 'oficina':
+        case 'direccion':
+            iconoClass = 'bx bxs-briefcase';
+            colorFondo = '#8b5cf6'; 
+            break;
+        case 'sala':
+            iconoClass = 'bx bxs-group';
+            colorFondo = '#6366f1'; 
+            break;
+        case 'auditorio':
+            iconoClass = 'bx bxs-microphone';
+            colorFondo = '#ef4444'; 
+            break;
+        case 'aula':
+        case 'salon':
+            iconoClass = 'bx bxs-book';
+            colorFondo = '#10b981'; 
+            break;
+        case 'lab':
+            iconoClass = 'bx bxs-flask';
+            colorFondo = '#0d9488'; 
+            break;
+    }
+
+    const htmlIcono = `
+        <div style="
+            background-color: ${colorFondo};
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 16px;">
+            <i class='${iconoClass}'></i>
+        </div>`;
+
+    const customIcon = L.divIcon({
+      className: 'icono-interior-dinamico',
+      html: htmlIcono,
+      iconSize: [28, 28],
+      popupAnchor: [0, -14]
     });
 
-    L.marker(lugar.coords, { icon: iconoInterior })
-      .bindPopup(`<strong>${lugar.nombre}</strong><br>${dataEdificio.nombre} - Planta ${piso}`)
+    L.marker(lugar.coords, { icon: customIcon })
+      .bindPopup(`
+        <div style="text-align:center;">
+            <i class='${iconoClass}' style="font-size: 24px; color: ${colorFondo}; margin-bottom: 5px;"></i><br>
+            <strong>${lugar.nombre}</strong><br>
+            <span style="font-size:0.9em; color:#666;">${dataEdificio.nombre} - Planta ${piso}</span>
+        </div>
+      `)
       .addTo(capaInteriores);
   });
 }
 
 /* =========================================
-   🎛️ CONTROL DE BOTONES (Grisear/Activar)
+   🎛️ CONTROL DE BOTONES
    ========================================= */
 function iniciarControlPisos() {
   const botones = {
@@ -131,17 +198,12 @@ function iniciarControlPisos() {
     const btn = botones[pisoKey];
     if(btn) {
       btn.addEventListener("click", (e) => {
-        e.stopPropagation(); // Evitar que el mapa detecte click
-        
-        // Solo funciona si hay edificio seleccionado
+        e.stopPropagation(); 
         if(edificioActualID) {
             cambiarPiso(pisoKey);
-            
-            // Actualizar estilo visual (clase activo)
             Object.values(botones).forEach(b => b.classList.remove("activo"));
             btn.classList.add("activo");
         } else {
-            // Animación de "No permitido" (opcional)
             btn.classList.add("shake");
             setTimeout(() => btn.classList.remove("shake"), 500);
         }
@@ -158,7 +220,6 @@ function actualizarBotonesPisos(pisosDisponibles) {
     "3": document.getElementById("botonPlanta4")
   };
 
-  // Si pisosDisponibles es null, desactivamos todo (Vista General)
   if (!pisosDisponibles) {
     Object.values(botones).forEach(btn => {
       if(btn) {
@@ -170,14 +231,13 @@ function actualizarBotonesPisos(pisosDisponibles) {
     return;
   }
 
-  // Si estamos en un edificio, activamos solo los que existen
   Object.keys(botones).forEach(pisoKey => {
     const btn = botones[pisoKey];
     if(btn) {
       if (pisosDisponibles.includes(pisoKey)) {
         btn.disabled = false;
         btn.classList.remove("desactivado");
-        if(pisoKey === "PB") btn.classList.add("activo"); // PB activa por defecto al entrar
+        if(pisoKey === "PB") btn.classList.add("activo"); 
       } else {
         btn.disabled = true;
         btn.classList.add("desactivado");
@@ -188,15 +248,14 @@ function actualizarBotonesPisos(pisosDisponibles) {
 }
 
 /* =========================================
-   🔙 SALIR DEL EDIFICIO (Clic fuera)
+   🔙 SALIR DEL EDIFICIO
    ========================================= */
 function iniciarResetClick() {
   mapa.on('click', (e) => {
-    // Si estamos dentro de un edificio...
     if (edificioActualID) {
         console.log("🔙 Saliendo a vista general...");
         cargarVistaGeneral();
-        mapa.flyTo([19.39595, -99.09163], 18); // Zoom Out
+        mapa.flyTo([19.39595, -99.09163], 18); 
     }
   });
 }
@@ -210,13 +269,11 @@ function iniciarBuscador(map) {
   const buscadorToggle = document.getElementById("buscador-toggle");
   const buscadorContainer = document.getElementById("buscador-container");
 
-  // Toggle visual
   buscadorToggle.addEventListener("click", () => {
     buscadorContainer.classList.toggle("oculto");
     if (!buscadorContainer.classList.contains("oculto")) buscador.focus();
   });
 
-  // Lógica de búsqueda
   buscador.addEventListener("input", () => {
     const query = buscador.value.toLowerCase().trim();
     resultados.innerHTML = "";
@@ -226,7 +283,6 @@ function iniciarBuscador(map) {
       return;
     }
 
-    // Filtramos del array puntosBusqueda (que ahora solo tiene edificios principales)
     const filtrados = puntosBusqueda.filter(p => p.nombre.toLowerCase().includes(query));
 
     if (filtrados.length === 0) {
@@ -236,16 +292,11 @@ function iniciarBuscador(map) {
         const li = document.createElement("li");
         li.textContent = p.nombre;
         li.addEventListener("click", () => {
-          map.flyTo(p.coords, 19); // Vamos al lugar
-          if (p.marker) p.marker.openPopup(); // Abrimos su info
-          
-          // Cerramos buscador
+          map.flyTo(p.coords, 20); 
+          if (p.marker) p.marker.fire('click'); 
           resultados.classList.add("oculto");
           buscador.value = "";
           if (window.innerWidth <= 768) buscadorContainer.classList.add("oculto");
-          
-          // Si es un edificio, activamos su lógica
-          // (Aquí podrías agregar lógica para activar entrarAEdificio automáticamente si buscas un edificio)
         });
         resultados.appendChild(li);
       });
@@ -253,7 +304,6 @@ function iniciarBuscador(map) {
     resultados.classList.remove("oculto");
   });
 
-  // Cerrar al dar click fuera
   document.addEventListener("click", (e) => {
     if (!buscador.contains(e.target) && !resultados.contains(e.target) && !buscadorToggle.contains(e.target)) {
       resultados.classList.add("oculto");
@@ -267,7 +317,6 @@ function iniciarUI() {
     const botonEntendido = document.getElementById("botonEntendido");
     const botonInfo = document.getElementById("botonInfo");
 
-    // Splash Screen
     setTimeout(() => {
         if (splash) {
             splash.classList.add("fade-out");
@@ -279,7 +328,6 @@ function iniciarUI() {
         }
     }, 3500);
 
-    // Botón Entendido
     botonEntendido.addEventListener("click", () => {
         pantalla.classList.remove("animarBienvenida");
         pantalla.classList.add("animarSalida");
@@ -289,7 +337,6 @@ function iniciarUI() {
         }, { once: true });
     });
 
-    // Botón Info (Reabrir instrucciones)
     botonInfo.addEventListener("click", () => {
         pantalla.style.display = "flex";
         pantalla.classList.remove("oculto");

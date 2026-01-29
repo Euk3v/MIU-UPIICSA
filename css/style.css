@@ -2,4 +2,19 @@
 @import url('base.css');       /* 1. Variables y reset */
 @import url('animations.css'); /* 2. Animaciones */
 @import url('layout.css');     /* 3. Estructura general */
-@import url('components.css'); /* 4. Botones y detalles (Aquí arreglamos el GPS) */
+@import url('components.css'); /* 4. Botones y detalles */
+
+/* =========================================
+   🚑 ARREGLO DE MAPA (Leaflet Fix)
+   ========================================= */
+/* Esto evita que el CSS global rompa los cuadros del mapa y se vean grises */
+.leaflet-container img {
+    max-width: none !important;
+    max-height: none !important;
+}
+
+/* Color de fondo por si el mapa tarda en cargar */
+#map {
+    background-color: #ddd;
+    z-index: 1; 
+}
